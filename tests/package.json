@@ -1,0 +1,12 @@
+{
+  "name": "trickywords-tests",
+  "private": true,
+  "description": "Headless checks for the Tricky Words site",
+  "scripts": {
+    "test": "node site.test.js",
+    "icons": "node make-icons.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.16.0"
+  }
+}
