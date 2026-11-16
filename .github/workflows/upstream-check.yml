@@ -1,0 +1,26 @@
+# Upstream check: are the copied game files, pictures and word lists still the same as the source?
+# Weekly and on demand. Fails if any file listed in upstream.json, or the data fingerprint, differs from the
+# source repo's main branch. A failed run (GitHub emails it) is the prompt to run `npm run sync` (see UPSTREAM.md).
+name: Upstream check
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'   # Mondays, 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The source repo is public, so it is fetched without a token
+      - name: Fetch the source (main)
+        run: git clone --depth 1 --branch main https://github.com/RobFirth/RobFirth.github.io.git "$RUNNER_TEMP/source"
+      - name: Compare with upstream.json
+        run: node tests/check-upstream.js "$RUNNER_TEMP/source"

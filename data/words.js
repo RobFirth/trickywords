@@ -1,8 +1,23 @@
-// Tricky Words: the word lists, in three modes a grown-up switches between.
-// Year 1 and Year 2 are the national curriculum's common exception words. The Reception list is one school's:
-// lists vary between schools. Ids, words, colours and tints match the game's source; only the labels differ (see UPSTREAM.md).
+// Tricky Words: the word lists for both games.
+// Match sets and pictureFor are copied unchanged from the games' source.
+// Flashcards: Year 1 and Year 2 are the national curriculum's common exception words. The Reception list is one school's.
+// Ids, words, colours and tints match the game's source; only the labels differ (see UPSTREAM.md).
 // Each word keeps its own capitals (I, Mr, Mrs, Christmas); everything else is lowercase.
 // colour: the card border and tile edge. tint: the tile fill.
+
+// Match: word sets in the order the sounds are taught.
+// Each set only uses sounds taught up to that point. Exception, by choice: 'ball' (its 'a' is not
+// the short a sound) because ff ll ss have few words that are easy to picture.
+// The picture for a word is always img/words/<word>.svg.
+export const matchSets = [
+  { id: 'set1', label: 's a t p i n', words: ['pin', 'tap', 'pan', 'tin', 'ant', 'nap'] },
+  { id: 'set2', label: 'm d g o c k ck', words: ['dog', 'cat', 'pig', 'map', 'cap', 'sock', 'mat', 'mop', 'pot', 'cot', 'sack', 'tick'] },
+  { id: 'set3', label: 'e u r h b f l', words: ['sun', 'bin', 'bus', 'bed', 'rat', 'bat', 'leg', 'bag', 'pen', 'duck', 'hat', 'cup', 'net', 'fan'] },
+  { id: 'set4', label: 'ff ll ss', words: ['bell', 'doll', 'hill', 'kiss', 'ball', 'well'] }
+];
+
+export const pictureFor = word => `img/words/${word}.svg`;
+
 export const flashModes = [
   { id: 'r', label: 'Reception' },
   { id: '1', label: 'Year 1' },

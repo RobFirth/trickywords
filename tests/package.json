@@ -4,6 +4,8 @@
   "description": "Headless checks for the Tricky Words site",
   "scripts": {
     "test": "node site.test.js",
+    "sync": "node sync-upstream.js",
+    "check-upstream": "node check-upstream.js",
     "icons": "node make-icons.js"
   },
   "devDependencies": {

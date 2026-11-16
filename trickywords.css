@@ -1,4 +1,4 @@
-/* Tricky Words: bright, calm, touch first. The shell and Flashcards rules, taken from the game's source (see UPSTREAM.md). */
+/* Tricky Words: bright, calm, touch first. The shell, menu, Match and Flashcards rules, taken from the games' source (see UPSTREAM.md). */
 
 /* Andika by SIL Global, self-hosted, unmodified (SIL Open Font Licence: fonts/OFL.txt) */
 @font-face { font-family: 'Andika'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/Andika-Regular.woff2') format('woff2'); }
@@ -60,12 +60,33 @@ img { display: block; }
   cursor: pointer; user-select: none; -webkit-user-select: none;
   touch-action: manipulation;
 }
+.btn-huge { min-height: 88px; padding: 14px 48px; font-size: 34px; }
 .btn-primary { background: var(--yellow); color: var(--ink); border-color: var(--ink); box-shadow: 0 5px 0 var(--ink); }
 .btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
 .btn-teal { background: var(--teal-dk); color: var(--white); box-shadow: 0 5px 0 #075158; }
 .btn-teal:active { transform: translateY(3px); box-shadow: 0 2px 0 #075158; }
 .btn-plain { background: var(--white); color: var(--ink); border-color: var(--ink); }
 
+/* ── Menu ── */
+#view-menu { display: flex; flex-direction: column; gap: 24px; }
+#view-menu.hidden { display: none; }
+.menu-header { padding: 8px 88px 0 8px; }
+.hello { margin: 0; font-size: clamp(34px, 6vmin, 56px); color: var(--indigo); }
+.tiles {
+  flex: 1; min-height: 0;
+  display: grid; gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  align-content: start;
+}
+.tile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  min-height: 200px; padding: 20px;
+  background: var(--white); border: 4px solid var(--ink); border-radius: 28px;
+  box-shadow: 0 6px 0 var(--ink);
+  font-size: 34px; font-weight: 700; cursor: pointer; touch-action: manipulation;
+}
+.tile:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+.tile img { width: 112px; height: 112px; }
 
 /* Grown-ups cog: press and hold, a ring fills */
 .cog {
@@ -100,6 +121,10 @@ img { display: block; }
 .corner-panel h2 { margin: 0 0 4px; font-size: 30px; }
 .corner-panel .btn { width: 100%; }
 .btn-toggle { justify-content: space-between; background: var(--white); border-color: var(--ink); }
+.btn-toggle .state { min-width: 3.2em; padding: 4px 14px; border-radius: 999px; font-size: 22px; color: var(--white); background: var(--ink-soft); }
+.btn-toggle .state::after { content: 'off'; }
+.btn-toggle[aria-pressed="true"] .state { background: var(--green-dk); }
+.btn-toggle[aria-pressed="true"] .state::after { content: 'on'; }
 
 /* ── Game host ── */
 .home-btn {
@@ -115,15 +140,107 @@ img { display: block; }
 .home-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
 .home-btn svg { width: 40px; height: 40px; fill: currentColor; }
 .game-root { position: relative; width: 100%; height: 100%; }
-/* End of deck card */
+
+/* ══ Match ══ */
+.match { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+/* Setup */
+.match-setup { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; padding-top: 4px; }
+.match-setup h2 { margin: 0; font-size: clamp(24px, 4.2vmin, 34px); line-height: 1.2; }
+.match-setup h2:first-child { min-height: var(--home); display: flex; align-items: center; padding-left: calc(var(--home) + var(--edge)); }
+.match-sets { flex: 1 1 auto; min-height: 0; display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); }
+.match-sets .mix-tile { grid-column: 1 / -1; flex-direction: row; gap: 18px; }
+.match-sets .mix-tile .set-pics { width: auto; }
+@media (orientation: landscape) { .match-sets { grid-template-columns: repeat(5, 1fr); } .match-sets .mix-tile { grid-column: auto; flex-direction: column; gap: 8px; } .match-sets .mix-tile .set-pics { width: 100%; } }
+.set-tile {
+  min-height: var(--touch); min-width: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px; background: var(--white);
+  border: 4px solid var(--ink); border-radius: 22px; cursor: pointer; touch-action: manipulation;
+}
+.set-tile .set-label { font-size: clamp(22px, 3.8vmin, 32px); font-weight: 700; letter-spacing: .04em; text-align: center; }
+.set-tile .set-pics { display: flex; gap: 6px; justify-content: center; width: 100%; }
+.set-tile .set-pics img { flex: 0 1 auto; min-width: 0; width: clamp(36px, 10.5vmin, 84px); max-width: 31%; height: auto; aspect-ratio: 1; }
+.set-tile[aria-pressed="true"] { background: #FFF1C4; border-color: var(--teal-dk); box-shadow: inset 0 0 0 4px var(--teal-dk); }
+.match-sizes { display: flex; gap: 14px; flex-wrap: wrap; }
+.size-btn {
+  flex: 1 1 0; min-height: 72px; min-width: var(--touch);
+  border: 4px solid var(--ink); border-radius: 22px; background: var(--white);
+  font-size: 28px; font-weight: 700; cursor: pointer; touch-action: manipulation;
+}
+.size-btn[aria-pressed="true"] { background: #FFF1C4; border-color: var(--teal-dk); box-shadow: inset 0 0 0 4px var(--teal-dk); }
+.match-start { align-self: center; min-width: min(360px, 100%); }
+
+/* Play: top bar sits to the right of the home button */
+.match-bar {
+  flex: none; height: var(--home);
+  display: flex; align-items: center; gap: 16px;
+  padding-left: calc(var(--home) + var(--edge) + 4px);
+}
+.match-progress { flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
+.progress-track { flex: 1; height: 24px; min-width: 60px; background: var(--white); border: 3px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0; background: var(--green); transition: width .3s; }
+.progress-text { font-size: 24px; font-weight: 700; white-space: nowrap; }
+.match-timer { min-width: 3.2em; padding: 6px 14px; background: var(--white); border: 3px solid var(--ink); border-radius: 16px; font-size: 26px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+.match-board-wrap { flex: 1; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center; padding-top: var(--edge); }
+.match-board { display: grid; gap: var(--gap, 10px); }
+
+/* Cards */
+.card {
+  position: relative; padding: 0; border: 0; background: transparent;
+  width: var(--card-w); height: var(--card-h);
+  perspective: 800px; cursor: pointer; touch-action: manipulation;
+  border-radius: 14px;
+}
+.card-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform var(--flip) ease; }
+.card.up .card-inner { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid var(--ink); border-radius: 14px;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.card-back { background: var(--teal); }
+.card-back img { width: 100%; height: 100%; object-fit: cover; }
+.card-front { background: var(--white); transform: rotateY(180deg); }
+.card-front img { width: 100%; height: 100%; padding: 14%; object-fit: contain; }
+.card-word { font-weight: 700; line-height: 1; color: var(--ink); white-space: nowrap; }
+.card.matched .card-front { border-color: var(--green); box-shadow: inset 0 0 0 4px var(--green); }
+.card .tick {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+  background: var(--green-dk); color: var(--white);
+}
+.card .tick svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.card.matched .tick { display: flex; }
+.card:focus-visible { outline: 4px solid var(--indigo); outline-offset: 3px; }
+
+/* Finish */
+.match-finish {
+  position: absolute; inset: 0; z-index: 6;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: rgba(255, 248, 231, .82);
+  animation: fade-in .4s ease both;
+}
 .finish-card {
   display: flex; flex-direction: column; align-items: center; gap: 18px;
   max-width: 100%; padding: 28px 32px; text-align: center;
   background: var(--white); border: 4px solid var(--ink); border-radius: 28px; box-shadow: 0 8px 0 var(--ink);
 }
 .finish-card h2 { margin: 0; font-size: clamp(30px, 6vmin, 48px); color: var(--indigo); }
+.finish-time { margin: 0; font-size: 30px; font-weight: 700; }
 .finish-buttons { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Confetti */
+.confetti { position: absolute; inset: 0; z-index: 7; overflow: hidden; pointer-events: none; }
+.confetti i { position: absolute; top: -24px; width: 14px; height: 20px; border-radius: 3px; animation: fall var(--dur, 1.4s) ease-in var(--delay, 0s) forwards; }
+.confetti i.round { border-radius: 50%; width: 16px; height: 16px; }
+@keyframes fall {
+  from { transform: translate3d(0, 0, 0) rotate(0); opacity: 1; }
+  to { transform: translate3d(var(--dx, 0), 110vh, 0) rotate(var(--rot, 540deg)); opacity: .9; }
+}
 
 /* ══ Flashcards ══ */
 .flash { position: absolute; inset: 0; display: flex; flex-direction: column; }
@@ -216,7 +333,6 @@ img { display: block; }
   .flash-modes { gap: 8px; }
   .corner-panel .flash-modes .btn { padding: 6px; font-size: 20px; }
 }
-
 .mode-btn { background: var(--white); border-color: var(--ink); }
 .mode-btn[aria-pressed="true"] { background: #FFF1C4; border-color: var(--teal-dk); box-shadow: inset 0 0 0 4px var(--teal-dk); }
 .flash-section-title { margin: 4px 0 0; font-size: 24px; }
@@ -279,19 +395,41 @@ img { display: block; }
 /* End of deck */
 .flash-end { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding-top: var(--home); }
 
-/* Reduced motion: fades instead of slides */
+/* Reduced motion: fades instead of flips and celebrations */
 @media (prefers-reduced-motion: reduce) {
-  .btn:active, .home-btn:active, .deck-tile:active, .flash-btn:active { transform: none; }
+  .card-inner { transform: none !important; transition: none; }
+  .card-face { backface-visibility: visible; -webkit-backface-visibility: visible; transition: opacity var(--flip) linear; }
+  .card-front { transform: none; opacity: 0; }
+  .card.up .card-front { opacity: 1; }
+  .card.up .card-back { opacity: 0; }
+  .progress-fill { transition: none; }
+  .btn:active, .tile:active, .home-btn:active, .deck-tile:active, .flash-btn:active { transform: none; }
   .flash-card.slide-next, .flash-card.slide-back { animation: fade-in .2s linear; }
   .flash-info { animation: none; }
   .flash-info-section > summary::before { transition: none; }
 }
 
-/* ══ This site only (not in the game's source stylesheet; listed in UPSTREAM.md) ══ */
-/* Home goes back to the deck picker, so it is hidden there (where :has is unsupported it stays, and is harmless) */
-#view-game:has(.flash-picker) .home-btn { display: none; }
-#view-game:has(.flash-picker) .flash-head { padding-left: 0; }
+/* ══ This site only (not in the games' source stylesheet; listed in UPSTREAM.md) ══ */
 .noscript { margin: 0; padding: 24px; font-size: 24px; }
+/* Menu "i": the Flashcards bubble's button and panel, placed left of the menu cog with the same geometry */
+#view-menu { position: fixed; }
+.menu-info-btn { top: max(var(--edge), env(safe-area-inset-top)); right: calc(max(var(--edge), env(safe-area-inset-right)) + var(--touch) + 4px); }
+.menu-header { padding-right: calc(2 * var(--touch) + 16px); }
+.flash-info.menu-info {
+  top: calc(max(var(--edge), env(safe-area-inset-top)) + var(--touch) + 12px);
+  right: max(var(--edge), env(safe-area-inset-right));
+  width: min(560px, calc(100% - 2 * var(--edge)));
+  max-height: calc(100% - max(var(--edge), env(safe-area-inset-top)) - var(--touch) - 12px - max(var(--edge), env(safe-area-inset-bottom)));
+}
+/* Licence footer: one small line for grown-ups, menu only */
+.menu-footer { flex: none; margin-top: -12px; text-align: center; font-size: 14px; line-height: 1.4; color: var(--ink-soft); }
+.menu-footer a, .footer-link { color: inherit; font: inherit; text-decoration: underline; }
+.footer-link { padding: 0; border: 0; background: none; cursor: pointer; }
+/* Narrow or very short screens: smaller menu tiles, so both tiles and the footer fit */
+@media (max-width: 380px), (max-height: 420px) {
+  .tile { min-height: 0; padding: 14px; gap: 8px; }
+  .tile img { width: 88px; height: 88px; }
+}
 /* Mode labels are single words here, so centre them */
 .corner-panel .flash-modes .btn { justify-content: center; }
 /* On a narrow phone: "Reception" takes its own row, Year 1 and Year 2 share the next; "Tricky 1" stays on one line */
@@ -299,4 +437,14 @@ img { display: block; }
   .flash-modes { flex-wrap: wrap; }
   .corner-panel .flash-modes .btn:first-child { flex-basis: 100%; }
   .deck-name { font-size: 22px; }
+  /* Match top bar: the pairs count and the timer side by side */
+  .match-bar { gap: 8px; padding-left: calc(var(--home) + var(--edge)); }
+  .match-progress { gap: 6px; }
+  .progress-text { font-size: 20px; }
+  .match-timer { min-width: 0; padding: 4px 8px; font-size: 22px; }
+}
+/* Flashcards picker on a 320 px phone: Home is shown, so "Reception" runs from just right of Home to just left of "i" */
+@media (max-width: 360px) {
+  .flash-head { padding-left: calc(var(--home) + 4px); padding-right: calc(2 * var(--touch) + 4px); }
+  .flash-mode { font-size: 18px; }
 }
