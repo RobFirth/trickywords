@@ -1,0 +1,302 @@
+/* Tricky Words: bright, calm, touch first. The shell and Flashcards rules, taken from the game's source (see UPSTREAM.md). */
+
+/* Andika by SIL Global, self-hosted, unmodified (SIL Open Font Licence: fonts/OFL.txt) */
+@font-face { font-family: 'Andika'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/Andika-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Andika'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/Andika-Bold.woff2') format('woff2'); }
+
+:root {
+  --bg: #FFF8E7;
+  --ink: #1F2A44;
+  --ink-soft: #3B4766;
+  --white: #FFFFFF;
+  --teal: #0E9AA7;       /* decoration only */
+  --teal-dk: #0A7680;    /* text and button fills: 5.1:1 on bg, 5.4:1 white on it */
+  --yellow: #FFC93C;     /* fills with ink text: 9.3:1 */
+  --coral: #FF6B6B;      /* decoration only */
+  --coral-dk: #C73E3E;
+  --green: #3DA35D;      /* outlines and ticks */
+  --green-dk: #2A7A44;
+  --indigo: #3D348B;
+  --radius: 20px;
+  --touch: 64px;
+  --home: 72px;          /* home button size; games leave this space top left */
+  --edge: 12px;
+  --font: 'Andika', 'Andika New Basic', system-ui, sans-serif;
+  --flip: 250ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%;
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font); font-size: 20px; line-height: 1.35;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+button, a { font-family: inherit; color: inherit; }
+img { display: block; }
+.hidden { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+:focus-visible { outline: 4px solid var(--indigo); outline-offset: 3px; }
+
+/* ── Views ── */
+.view {
+  position: fixed; inset: 0;
+  height: 100vh; height: 100dvh;
+  overflow: hidden;
+  padding: max(var(--edge), env(safe-area-inset-top)) max(var(--edge), env(safe-area-inset-right))
+           max(var(--edge), env(safe-area-inset-bottom)) max(var(--edge), env(safe-area-inset-left));
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  min-height: var(--touch); min-width: var(--touch);
+  padding: 10px 28px;
+  border: 3px solid transparent; border-radius: var(--radius);
+  font-size: 26px; font-weight: 700; text-decoration: none;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  touch-action: manipulation;
+}
+.btn-primary { background: var(--yellow); color: var(--ink); border-color: var(--ink); box-shadow: 0 5px 0 var(--ink); }
+.btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+.btn-teal { background: var(--teal-dk); color: var(--white); box-shadow: 0 5px 0 #075158; }
+.btn-teal:active { transform: translateY(3px); box-shadow: 0 2px 0 #075158; }
+.btn-plain { background: var(--white); color: var(--ink); border-color: var(--ink); }
+
+
+/* Grown-ups cog: press and hold, a ring fills */
+.cog {
+  position: absolute;
+  top: max(var(--edge), env(safe-area-inset-top)); right: max(var(--edge), env(safe-area-inset-right));
+  width: var(--touch); height: var(--touch);
+  border: 0; padding: 0; border-radius: 50%;
+  background: transparent; color: var(--ink-soft);
+  cursor: pointer;
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.cog svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.cog-icon { padding: 16px; fill: currentColor; opacity: .55; }
+.cog-ring { transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: transparent; stroke-width: 5; }
+.ring-fill { fill: none; stroke: var(--teal-dk); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; }
+.cog.holding .ring-track { stroke: rgba(31, 42, 68, .12); }
+.cog.holding .ring-fill { animation: ring-fill 2s linear forwards; }
+@keyframes ring-fill { to { stroke-dashoffset: 0; } }
+
+/* Grown-ups panel */
+.corner {
+  position: fixed; inset: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(31, 42, 68, .45);
+}
+.corner-panel {
+  display: flex; flex-direction: column; gap: 14px;
+  width: min(420px, 100%); max-height: 100%; overflow-y: auto;
+  padding: 24px; background: var(--bg); border: 4px solid var(--ink); border-radius: 28px;
+}
+.corner-panel h2 { margin: 0 0 4px; font-size: 30px; }
+.corner-panel .btn { width: 100%; }
+.btn-toggle { justify-content: space-between; background: var(--white); border-color: var(--ink); }
+
+/* ── Game host ── */
+.home-btn {
+  position: absolute; z-index: 5;
+  top: max(var(--edge), env(safe-area-inset-top)); left: max(var(--edge), env(safe-area-inset-left));
+  width: var(--home); height: var(--home);
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid var(--ink); border-radius: 22px;
+  background: var(--yellow); color: var(--ink);
+  box-shadow: 0 4px 0 var(--ink);
+  cursor: pointer; touch-action: manipulation;
+}
+.home-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+.home-btn svg { width: 40px; height: 40px; fill: currentColor; }
+.game-root { position: relative; width: 100%; height: 100%; }
+/* End of deck card */
+.finish-card {
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  max-width: 100%; padding: 28px 32px; text-align: center;
+  background: var(--white); border: 4px solid var(--ink); border-radius: 28px; box-shadow: 0 8px 0 var(--ink);
+}
+.finish-card h2 { margin: 0; font-size: clamp(30px, 6vmin, 48px); color: var(--indigo); }
+.finish-buttons { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* ══ Flashcards ══ */
+.flash { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.btn:disabled { opacity: .45; cursor: default; box-shadow: none; }
+
+/* Deck picker */
+.flash-picker { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; }
+.flash-head { flex: none; min-height: var(--home); display: flex; align-items: center; padding: 0 calc(2 * var(--touch) + var(--edge)) 0 calc(var(--home) + var(--edge)); }
+.flash-mode { margin: 0; min-width: 0; font-size: clamp(26px, 4.6vmin, 40px); line-height: 1.2; color: var(--indigo); }
+.cog.flash-cog { top: 4px; right: 0; }
+@media (max-width: 360px) { .flash-mode { font-size: 22px; } } /* "Tricky" fits between Home and the two buttons on a 320 px phone */
+
+/* Info: a plain button left of the cog, and a bubble under it */
+.flash-info-btn {
+  position: absolute; top: 4px; right: calc(var(--touch) + 4px);
+  width: var(--touch); height: var(--touch); padding: 0;
+  border: 0; border-radius: 50%; background: transparent; color: var(--ink-soft);
+  cursor: pointer; touch-action: manipulation;
+}
+.flash-info-btn svg { display: block; width: 100%; height: 100%; padding: 13px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; opacity: .7; }
+.flash-info-btn svg .fill { fill: currentColor; stroke: none; }
+.flash-info-btn[aria-expanded="true"] { background: #FFF1C4; color: var(--ink); }
+.flash-info-btn[aria-expanded="true"] svg { opacity: 1; }
+.flash-info {
+  position: absolute; z-index: 10; top: calc(4px + var(--touch) + 12px); right: 0;
+  width: min(560px, 100%); max-height: min(80vh, calc(100% - var(--touch) - 16px));
+  display: flex; flex-direction: column;
+  background: var(--white); border: 4px solid var(--ink); border-radius: 24px; box-shadow: 0 6px 0 var(--ink);
+  animation: fade-in .15s linear;
+}
+.flash-info:focus { outline: none; } /* focus lands on the bubble itself so it is read out; the panel's own border marks it */
+/* The pointer, under the centre of the "i" button: its centre is 1.5 touch + 4px from the right; less the 4px border and half the pointer */
+.flash-info::before, .flash-info::after { content: ''; position: absolute; right: calc(1.5 * var(--touch) - 14px); border: 14px solid transparent; border-top: 0; }
+.flash-info::before { top: -18px; border-bottom: 14px solid var(--ink); }
+.flash-info::after { top: -12px; border-bottom: 14px solid var(--white); }
+.flash-info-close {
+  position: absolute; top: 4px; right: 4px; z-index: 1;
+  width: var(--touch); height: var(--touch); padding: 0;
+  border: 0; border-radius: 18px; background: transparent; color: var(--ink);
+  font-family: inherit; font-size: 40px; line-height: 1; cursor: pointer; touch-action: manipulation;
+}
+.flash-info-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 4px 20px 16px; }
+.flash-info-section { border-top: 2px solid rgba(31, 42, 68, .15); }
+.flash-info-section:first-child { border-top: 0; }
+.flash-info-section > summary {
+  display: flex; align-items: center; gap: 12px; min-height: var(--touch); padding-right: var(--touch);
+  font-size: 26px; font-weight: 700; color: var(--indigo); cursor: pointer; list-style: none;
+}
+.flash-info-section > summary::-webkit-details-marker { display: none; }
+.flash-info-section > summary::before { content: ''; flex: none; width: 0; height: 0; border: 9px solid transparent; border-left: 13px solid currentColor; border-right: 0; transition: transform .15s; }
+.flash-info-section[open] > summary::before { transform: rotate(90deg); }
+.flash-info-section h3 { margin: 6px 0 4px; font-size: 21px; }
+.flash-info-section ul { margin: 0 0 8px; padding-left: 1.2em; }
+.flash-info-section li { margin: 4px 0; }
+.flash-info-section p { margin: 8px 0; }
+.flash-info-section a { color: var(--teal-dk); font-weight: 700; }
+.flash-decks {
+  flex: 1 1 auto; min-height: 0;
+  display: grid; gap: 16px; padding: 4px;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(88px, 190px); align-content: start;
+}
+@media (orientation: landscape) { .flash-decks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* Deck colours can be pale, so every coloured edge has an ink line both sides (3:1 against white either way) */
+.deck-tile {
+  min-width: 0; min-height: var(--touch);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  padding: 10px; background: var(--tint, var(--white)); color: var(--ink);
+  border: 10px solid var(--deck, var(--ink)); border-radius: 24px;
+  box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--ink);
+  cursor: pointer; touch-action: manipulation;
+}
+.deck-tile:active { transform: translateY(3px); }
+.deck-tile.last { box-shadow: 0 0 0 3px var(--ink), 0 0 0 9px var(--indigo), inset 0 0 0 3px var(--ink); }
+.deck-name { display: inline-flex; align-items: center; gap: 8px; font-size: clamp(26px, 4.8vmin, 40px); font-weight: 700; line-height: 1.15; text-align: center; }
+.deck-count { font-size: clamp(18px, 3vmin, 24px); color: var(--ink-soft); }
+.deck-tile { position: relative; }
+.all-tile { border-color: transparent; background: linear-gradient(var(--tint), var(--tint)) padding-box, var(--stripes) border-box; }
+.deck-tile .rosette { position: absolute; top: 6px; right: 8px; width: clamp(34px, 6vmin, 48px); }
+.deck-tile .rosette svg, .rosette-icon svg { display: block; width: 100%; height: auto; }
+.deck-star svg { display: block; width: 1em; height: 1em; fill: var(--yellow); stroke: var(--ink); stroke-width: 1.6; stroke-linejoin: round; }
+
+/* Grown-ups panel */
+.corner-panel.flash-panel-body { width: min(760px, 100%); overflow: hidden; }
+.flash-modes { display: flex; gap: 12px; }
+.corner-panel .flash-modes .btn { flex: 1 1 0; width: auto; padding: 8px 10px; line-height: 1.1; text-align: center; }
+/* Three mode buttons on a narrow phone: less padding, and long labels may wrap */
+@media (max-width: 480px) {
+  .corner.flash-panel { padding: 8px; }
+  .corner-panel.flash-panel-body { padding: 16px; }
+  .flash-modes { gap: 8px; }
+  .corner-panel .flash-modes .btn { padding: 6px; font-size: 20px; }
+}
+
+.mode-btn { background: var(--white); border-color: var(--ink); }
+.mode-btn[aria-pressed="true"] { background: #FFF1C4; border-color: var(--teal-dk); box-shadow: inset 0 0 0 4px var(--teal-dk); }
+.flash-section-title { margin: 4px 0 0; font-size: 24px; }
+.rosette-toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+.rosette-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-width: var(--touch); min-height: var(--touch); padding: 6px 14px 6px 10px;
+  background: var(--tint, var(--white)); border: 6px solid var(--deck, var(--ink)); border-radius: 16px;
+  box-shadow: 0 0 0 2px var(--ink), inset 0 0 0 2px var(--ink);
+  font-size: 22px; font-weight: 700; cursor: pointer; touch-action: manipulation;
+}
+.rosette-icon { width: 30px; opacity: .25; filter: grayscale(1); }
+.rosette-btn[aria-pressed="true"] .rosette-icon { opacity: 1; filter: none; }
+.flash-hint { margin: 0; font-size: 18px; color: var(--ink-soft); }
+.flash-words { flex: 1 1 auto; min-height: 96px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 12px; padding: 4px; }
+.word-group-label { margin: 0 0 6px; padding-left: 10px; border-left: 10px solid var(--deck, var(--ink)); font-size: 18px; }
+.word-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.word-chip {
+  min-width: var(--touch); min-height: var(--touch); padding: 6px 14px;
+  background: var(--white); border: 3px solid var(--ink); border-radius: 16px;
+  font-size: 24px; cursor: pointer; touch-action: manipulation;
+}
+.word-chip[aria-pressed="true"] { background: var(--yellow); box-shadow: inset 0 0 0 3px var(--ink); font-weight: 700; }
+.flash-panel-buttons { display: flex; gap: 12px; }
+.corner-panel .flash-panel-buttons .btn { flex: 1 1 0; width: auto; padding: 10px 12px; }
+
+/* Card view */
+.flash-play { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding-top: calc(var(--home) + var(--edge)); }
+.flash-stage { flex: none; width: 100%; display: flex; align-items: center; justify-content: center; } /* height set by the game to the card's */
+.flash-card {
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  padding: 0; background: var(--white); color: var(--ink);
+  border: clamp(8px, 2vmin, 16px) solid var(--deck, var(--ink)); border-radius: 28px;
+  box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--ink);
+  cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.flash-word { font-weight: 400; line-height: 1.15; white-space: nowrap; pointer-events: none; }
+.flash-counter { flex: none; margin: 0; font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.flash-controls { flex: none; display: flex; align-items: center; justify-content: center; gap: clamp(16px, 4vw, 40px); }
+.flash-btn {
+  width: 76px; height: 76px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--white); color: var(--ink);
+  border: 3px solid var(--ink); border-radius: 22px; box-shadow: 0 4px 0 var(--ink);
+  cursor: pointer; touch-action: manipulation;
+}
+.flash-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+.flash-btn svg { width: 44px; height: 44px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.flash-btn svg .fill { fill: currentColor; }
+.flash-back svg { transform: scaleX(-1); }
+.flash-next { width: 124px; height: 96px; background: var(--yellow); }
+.flash-next svg { width: 60px; height: 60px; stroke-width: 3.5; }
+.flash-btn:disabled { opacity: .35; box-shadow: none; transform: none; cursor: default; }
+.flash-card.slide-next { animation: flash-from-right .18s ease-out; }
+.flash-card.slide-back { animation: flash-from-left .18s ease-out; }
+.flash-card.fade { animation: fade-in .2s linear; }
+@keyframes flash-from-right { from { transform: translateX(36px); opacity: .2; } to { transform: none; opacity: 1; } }
+@keyframes flash-from-left { from { transform: translateX(-36px); opacity: .2; } to { transform: none; opacity: 1; } }
+
+/* End of deck */
+.flash-end { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding-top: var(--home); }
+
+/* Reduced motion: fades instead of slides */
+@media (prefers-reduced-motion: reduce) {
+  .btn:active, .home-btn:active, .deck-tile:active, .flash-btn:active { transform: none; }
+  .flash-card.slide-next, .flash-card.slide-back { animation: fade-in .2s linear; }
+  .flash-info { animation: none; }
+  .flash-info-section > summary::before { transition: none; }
+}
+
+/* ══ This site only (not in the game's source stylesheet; listed in UPSTREAM.md) ══ */
+/* Home goes back to the deck picker, so it is hidden there (where :has is unsupported it stays, and is harmless) */
+#view-game:has(.flash-picker) .home-btn { display: none; }
+#view-game:has(.flash-picker) .flash-head { padding-left: 0; }
+.noscript { margin: 0; padding: 24px; font-size: 24px; }
+/* Mode labels are single words here, so centre them */
+.corner-panel .flash-modes .btn { justify-content: center; }
+/* On a narrow phone: "Reception" takes its own row, Year 1 and Year 2 share the next; "Tricky 1" stays on one line */
+@media (max-width: 380px) {
+  .flash-modes { flex-wrap: wrap; }
+  .corner-panel .flash-modes .btn:first-child { flex-basis: 100%; }
+  .deck-name { font-size: 22px; }
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Free flashcards for the tricky words children learn in Reception, Year 1 and Year 2. No accounts, no adverts, no tracking.">
+<meta name="theme-color" content="#FFF8E7">
+<title>Tricky Words</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preload" href="fonts/Andika-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/Andika-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="trickywords.css">
+</head>
+<body>
+
+<main id="view-game" class="view">
+  <h1 class="sr-only">Tricky Words</h1>
+  <button id="btn-home" class="home-btn" type="button" aria-label="Back to the decks">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>
+  </button>
+  <div id="game-root" class="game-root"></div>
+  <noscript><p class="noscript">Tricky Words needs JavaScript to show the flashcards.</p></noscript>
+</main>
+
+<script type="module" src="shell.js"></script>
+</body>
+</html>
