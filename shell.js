@@ -78,6 +78,7 @@ function about() {
   d.append(para('Word games for early readers. ', strong('Tricky words'), ' are flashcards for the words children learn by sight in Reception, Year 1 and Year 2. The Year 1 and Year 2 words are the common exception words from the national curriculum. ',
     strong('Picture match'), ' is a memory game with first words to sound out.'));
   d.append(para('This site has no accounts, no adverts and no tracking. Your settings are saved only on this device. Nothing you do here is sent to us or anyone else.'));
+  d.append(para('To keep it on your home screen, choose "Install" or "Add to Home Screen" from your browser\'s menu. It still needs the internet to work.'));
   d.append(para('Code: ', link('MIT licence', 'LICENSE.txt'), '.'));
   d.append(para('Font: Andika by SIL Global, under the ', link('SIL Open Font Licence', 'fonts/OFL.txt'), '.'));
   d.append(para('Some pictures are from Twemoji, © Twitter, Inc and other contributors, CC-BY 4.0. ', link('Picture credits', 'img/CREDITS.md'), '.'));
