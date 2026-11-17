@@ -41,6 +41,7 @@ const SCAN_EXEMPT = ['UPSTREAM.md', 'upstream.json'];
 // The spec's text, word for word
 const ABOUT_1 = 'Word games for early readers. Tricky words are flashcards for the words children learn by sight in Reception, Year 1 and Year 2. The Year 1 and Year 2 words are the common exception words from the national curriculum. Picture match is a memory game with first words to sound out.';
 const ABOUT_2 = 'This site has no accounts, no adverts and no tracking. Your settings are saved only on this device. Nothing you do here is sent to us or anyone else.';
+const ABOUT_3 = 'To keep it on your home screen, choose "Install" or "Add to Home Screen" from your browser\'s menu. It still needs the internet to work.';
 const CREDITS = ['Code: MIT licence.', 'Font: Andika by SIL Global, under the SIL Open Font Licence.', 'Some pictures are from Twemoji, © Twitter, Inc and other contributors, CC-BY 4.0. Picture credits.', 'Feedback'];
 const HOW = ['Choose one or more sets of sounds, and how many pairs.', 'Tap two cards. A picture and its word make a pair.', 'If they don\'t match, they turn back after a moment.', 'Find every pair to finish.'];
 const HOW_P = ['The sets follow the order sounds are usually taught. Each set only uses sounds from that set and the ones before it.',
@@ -412,7 +413,8 @@ const SIZES = [[600, 1024], [1024, 600], [1280, 800], [800, 1280], [390, 844], [
   await h.click('#menu-info .flash-about summary');
   const menuAbout = await aboutOf(p, '#menu-info .flash-about');
   ok('info: About, word for word, with the two game names in bold', menuAbout.summary === 'About' && menuAbout.paras[0] === ABOUT_1 && menuAbout.paras[1] === ABOUT_2 && menuAbout.bold.join() === 'Tricky words,Picture match', menuAbout.paras.slice(0, 2));
-  ok('info: credits for the code, the font and the pictures, then Feedback', JSON.stringify(menuAbout.paras.slice(2)) === JSON.stringify(CREDITS), menuAbout.paras.slice(2));
+  ok('info: About says how to add the site to a home screen, and that it needs a connection', menuAbout.paras[2] === ABOUT_3, menuAbout.paras[2]);
+  ok('info: credits for the code, the font and the pictures, then Feedback', JSON.stringify(menuAbout.paras.slice(3)) === JSON.stringify(CREDITS), menuAbout.paras.slice(3));
   ok('info: credit links go to LICENSE.txt, fonts/OFL.txt, img/CREDITS.md; Feedback to the issues in a new tab', JSON.stringify(menuAbout.links) === JSON.stringify([['MIT licence', 'LICENSE.txt'], ['SIL Open Font Licence', 'fonts/OFL.txt'], ['Picture credits', 'img/CREDITS.md'], ['Feedback', FEEDBACK]])
     && await p.$eval('#menu-info a[href^="https"]', a => a.target === '_blank' && /noopener/.test(a.rel)));
   await h.click('#menu-info .flash-info-close', 40);
