@@ -412,8 +412,8 @@ const SIZES = [[600, 1024], [1024, 600], [1280, 800], [800, 1280], [390, 844], [
     && (await p.$eval('#menu-info .match-how p:last-child strong', e => e.textContent)) === 'For grown-ups');
   await h.click('#menu-info .flash-about summary');
   const menuAbout = await aboutOf(p, '#menu-info .flash-about');
-  ok('info: About, word for word, with the two game names in bold', menuAbout.summary === 'About' && menuAbout.paras[0] === ABOUT_1 && menuAbout.paras[1] === ABOUT_2 && menuAbout.bold.join() === 'Tricky words,Picture match', menuAbout.paras.slice(0, 2));
-  ok('info: About says how to add the site to a home screen, and that it needs a connection', menuAbout.paras[2] === ABOUT_3, menuAbout.paras[2]);
+  ok('info: About, word for word, with the two game names in bold', menuAbout.summary === 'About' && menuAbout.paras[0] === ABOUT_1 && menuAbout.paras[1] === ABOUT_2 && menuAbout.bold.slice(0, 2).join() === 'Tricky words,Picture match' && menuAbout.bold.length === 3, menuAbout.paras.slice(0, 2));
+  ok('info: About says how to add the site to a home screen, and that it needs a connection, in bold', menuAbout.paras[2] === ABOUT_3 && menuAbout.bold[2] === ABOUT_3, [menuAbout.paras[2], menuAbout.bold]);
   ok('info: credits for the code, the font and the pictures, then Feedback', JSON.stringify(menuAbout.paras.slice(3)) === JSON.stringify(CREDITS), menuAbout.paras.slice(3));
   ok('info: credit links go to LICENSE.txt, fonts/OFL.txt, img/CREDITS.md; Feedback to the issues in a new tab', JSON.stringify(menuAbout.links) === JSON.stringify([['MIT licence', 'LICENSE.txt'], ['SIL Open Font Licence', 'fonts/OFL.txt'], ['Picture credits', 'img/CREDITS.md'], ['Feedback', FEEDBACK]])
     && await p.$eval('#menu-info a[href^="https"]', a => a.target === '_blank' && /noopener/.test(a.rel)));
